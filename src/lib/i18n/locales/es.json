@@ -1,0 +1,201 @@
+{
+  "app": {
+    "name": "Banco FinTech",
+    "description": "El futuro de la banca",
+    "tagline": "Combina perfectamente las finanzas tradicionales con la tecnología Web3"
+  },
+  "common": {
+    "get_started": "Empezar",
+    "learn_more": "Saber Más",
+    "connect_wallet": "Conectar Billetera",
+    "wallet_connected": "Billetera Conectada",
+    "disconnect": "Desconectar",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirm_password": "Confirmar Contraseña",
+    "sign_in": "Iniciar Sesión",
+    "sign_up": "Registrarse",
+    "dashboard": "Panel de Control",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "notifications": "Notificaciones",
+    "security": "Seguridad",
+    "api_settings": "Configuración de API",
+    "billing": "Facturación",
+    "save_changes": "Guardar Cambios",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "warning": "Advertencia",
+    "info": "Información",
+    "close": "Cerrar",
+    "retry": "Reintentar",
+    "refresh": "Actualizar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "export": "Exportar",
+    "import": "Importar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "copy": "Copiar",
+    "share": "Compartir",
+    "print": "Imprimir",
+    "download": "Descargar",
+    "upload": "Subir"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "services": "Servicios",
+    "contact": "Contacto",
+    "help": "Ayuda",
+    "support": "Soporte",
+    "documentation": "Documentación",
+    "api": "API",
+    "pricing": "Precios",
+    "features": "Características"
+  },
+  "auth": {
+    "welcome_back": "Bienvenido de nuevo",
+    "create_account": "Crea tu cuenta",
+    "forgot_password": "¿Olvidaste tu contraseña?",
+    "reset_password": "Restablecer Contraseña",
+    "remember_me": "Recordarme",
+    "or_continue_with": "O continúa con",
+    "already_have_account": "¿Ya tienes una cuenta?",
+    "dont_have_account": "¿No tienes una cuenta?",
+    "terms_and_conditions": "Términos y Condiciones",
+    "privacy_policy": "Política de Privacidad",
+    "agree_to_terms": "Acepto los {terms} y la {privacy}",
+    "verify_email": "Verifica tu correo electrónico",
+    "check_email": "Revisa tu correo electrónico para el enlace de verificación",
+    "resend_verification": "Reenviar correo de verificación"
+  },
+  "dashboard": {
+    "welcome": "Bienvenido de nuevo, {name}",
+    "total_balance": "Saldo Total",
+    "available_balance": "Saldo Disponible",
+    "pending_transactions": "Transacciones Pendientes",
+    "recent_activity": "Actividad Reciente",
+    "quick_actions": "Acciones Rápidas",
+    "send_money": "Enviar Dinero",
+    "request_money": "Solicitar Dinero",
+    "pay_bills": "Pagar Facturas",
+    "view_statements": "Ver Estados de Cuenta"
+  },
+  "transactions": {
+    "all_transactions": "Todas las Transacciones",
+    "income": "Ingresos",
+    "expenses": "Gastos",
+    "transfers": "Transferencias",
+    "date": "Fecha",
+    "description": "Descripción",
+    "amount": "Cantidad",
+    "status": "Estado",
+    "category": "Categoría",
+    "reference": "Referencia",
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "failed": "Fallido",
+    "cancelled": "Cancelado"
+  },
+  "wallet": {
+    "connect_wallet": "Conecta Tu Billetera",
+    "wallet_address": "Dirección de Billetera",
+    "balance": "Saldo",
+    "transaction_history": "Historial de Transacciones",
+    "send": "Enviar",
+    "receive": "Recibir",
+    "swap": "Intercambiar",
+    "stake": "Apostar",
+    "unstake": "Desapostar",
+    "gas_fee": "Tarifa de Gas",
+    "network": "Red",
+    "token": "Token",
+    "nft": "NFT",
+    "defi": "DeFi"
+  },
+  "errors": {
+    "generic": "Ocurrió un error inesperado",
+    "network": "Falló la conexión de red",
+    "timeout": "Se agotó el tiempo de espera de la solicitud",
+    "unauthorized": "No estás autorizado para realizar esta acción",
+    "forbidden": "Acceso denegado",
+    "not_found": "No se encontró el recurso solicitado",
+    "server_error": "Error interno del servidor",
+    "validation_failed": "Falló la validación",
+    "invalid_credentials": "Correo electrónico o contraseña inválidos",
+    "email_required": "El correo electrónico es requerido",
+    "password_required": "La contraseña es requerida",
+    "password_too_short": "La contraseña debe tener al menos 8 caracteres",
+    "passwords_dont_match": "Las contraseñas no coinciden",
+    "email_invalid": "Por favor ingresa un correo electrónico válido",
+    "wallet_connection_failed": "Falló la conexión de la billetera",
+    "transaction_failed": "Falló la transacción",
+    "insufficient_funds": "Fondos insuficientes",
+    "offline": "Actualmente estás desconectado"
+  },
+  "success": {
+    "login_successful": "Inicio de sesión exitoso",
+    "registration_successful": "Registro exitoso",
+    "profile_updated": "Perfil actualizado exitosamente",
+    "password_changed": "Contraseña cambiada exitosamente",
+    "email_verified": "Correo electrónico verificado exitosamente",
+    "wallet_connected": "Billetera conectada exitosamente",
+    "transaction_successful": "Transacción completada exitosamente",
+    "settings_saved": "Configuración guardada exitosamente"
+  },
+  "features": {
+    "traditional_banking": {
+      "title": "Banca Tradicional",
+      "description": "Banca completa con cuentas, transferencias y pagos"
+    },
+    "web3_integration": {
+      "title": "Integración Web3",
+      "description": "Conecta tu billetera cripto y gestiona activos digitales"
+    },
+    "advanced_analytics": {
+      "title": "Análisis Avanzados",
+      "description": "Información en tiempo real e informes financieros completos"
+    },
+    "enterprise_security": {
+      "title": "Seguridad Empresarial",
+      "description": "Seguridad de nivel bancario con autenticación multifactor"
+    },
+    "digital_cards": {
+      "title": "Tarjetas Digitales",
+      "description": "Tarjetas de débito virtuales y físicas con controles de gasto"
+    },
+    "ai_powered": {
+      "title": "Impulsado por IA",
+      "description": "Detección inteligente de fraudes y recomendaciones personalizadas"
+    }
+  },
+  "stats": {
+    "assets_under_management": "Activos Bajo Gestión",
+    "active_users": "Usuarios Activos",
+    "uptime": "Tiempo de Actividad",
+    "support": "Soporte",
+    "api_calls": "Llamadas a la API",
+    "total_revenue": "Ingresos Totales",
+    "conversion_rate": "Tasa de Conversión"
+  },
+  "cta": {
+    "title": "¿Listo para Transformar tu Banca?",
+    "description": "Únete a miles de usuarios que ya han hecho el cambio a la banca de próxima generación",
+    "create_free_account": "Crear Cuenta Gratuita"
+  },
+  "footer": {
+    "copyright": "© {year} Banco FinTech. Todos los derechos reservados.",
+    "made_with": "Hecho con ❤️ para el futuro de las finanzas"
+  }
+}

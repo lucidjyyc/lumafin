@@ -1,0 +1,201 @@
+{
+  "app": {
+    "name": "FinTech Bank",
+    "description": "The future of banking",
+    "tagline": "Seamlessly blend traditional finance with Web3 technology"
+  },
+  "common": {
+    "get_started": "Get Started",
+    "learn_more": "Learn More",
+    "connect_wallet": "Connect Wallet",
+    "wallet_connected": "Wallet Connected",
+    "disconnect": "Disconnect",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email Address",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "sign_in": "Sign In",
+    "sign_up": "Sign Up",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "security": "Security",
+    "api_settings": "API Settings",
+    "billing": "Billing",
+    "save_changes": "Save Changes",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information",
+    "close": "Close",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "copy": "Copy",
+    "share": "Share",
+    "print": "Print",
+    "download": "Download",
+    "upload": "Upload"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact",
+    "help": "Help",
+    "support": "Support",
+    "documentation": "Documentation",
+    "api": "API",
+    "pricing": "Pricing",
+    "features": "Features"
+  },
+  "auth": {
+    "welcome_back": "Welcome back",
+    "create_account": "Create your account",
+    "forgot_password": "Forgot your password?",
+    "reset_password": "Reset Password",
+    "remember_me": "Remember me",
+    "or_continue_with": "Or continue with",
+    "already_have_account": "Already have an account?",
+    "dont_have_account": "Don't have an account?",
+    "terms_and_conditions": "Terms and Conditions",
+    "privacy_policy": "Privacy Policy",
+    "agree_to_terms": "I agree to the {terms} and {privacy}",
+    "verify_email": "Verify your email",
+    "check_email": "Check your email for a verification link",
+    "resend_verification": "Resend verification email"
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {name}",
+    "total_balance": "Total Balance",
+    "available_balance": "Available Balance",
+    "pending_transactions": "Pending Transactions",
+    "recent_activity": "Recent Activity",
+    "quick_actions": "Quick Actions",
+    "send_money": "Send Money",
+    "request_money": "Request Money",
+    "pay_bills": "Pay Bills",
+    "view_statements": "View Statements"
+  },
+  "transactions": {
+    "all_transactions": "All Transactions",
+    "income": "Income",
+    "expenses": "Expenses",
+    "transfers": "Transfers",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "status": "Status",
+    "category": "Category",
+    "reference": "Reference",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "wallet": {
+    "connect_wallet": "Connect Your Wallet",
+    "wallet_address": "Wallet Address",
+    "balance": "Balance",
+    "transaction_history": "Transaction History",
+    "send": "Send",
+    "receive": "Receive",
+    "swap": "Swap",
+    "stake": "Stake",
+    "unstake": "Unstake",
+    "gas_fee": "Gas Fee",
+    "network": "Network",
+    "token": "Token",
+    "nft": "NFT",
+    "defi": "DeFi"
+  },
+  "errors": {
+    "generic": "An unexpected error occurred",
+    "network": "Network connection failed",
+    "timeout": "Request timed out",
+    "unauthorized": "You are not authorized to perform this action",
+    "forbidden": "Access denied",
+    "not_found": "The requested resource was not found",
+    "server_error": "Internal server error",
+    "validation_failed": "Validation failed",
+    "invalid_credentials": "Invalid email or password",
+    "email_required": "Email is required",
+    "password_required": "Password is required",
+    "password_too_short": "Password must be at least 8 characters",
+    "passwords_dont_match": "Passwords don't match",
+    "email_invalid": "Please enter a valid email address",
+    "wallet_connection_failed": "Failed to connect wallet",
+    "transaction_failed": "Transaction failed",
+    "insufficient_funds": "Insufficient funds",
+    "offline": "You are currently offline"
+  },
+  "success": {
+    "login_successful": "Login successful",
+    "registration_successful": "Registration successful",
+    "profile_updated": "Profile updated successfully",
+    "password_changed": "Password changed successfully",
+    "email_verified": "Email verified successfully",
+    "wallet_connected": "Wallet connected successfully",
+    "transaction_successful": "Transaction completed successfully",
+    "settings_saved": "Settings saved successfully"
+  },
+  "features": {
+    "traditional_banking": {
+      "title": "Traditional Banking",
+      "description": "Full-featured banking with accounts, transfers, and payments"
+    },
+    "web3_integration": {
+      "title": "Web3 Integration",
+      "description": "Connect your crypto wallet and manage digital assets"
+    },
+    "advanced_analytics": {
+      "title": "Advanced Analytics",
+      "description": "Real-time insights and comprehensive financial reporting"
+    },
+    "enterprise_security": {
+      "title": "Enterprise Security",
+      "description": "Bank-grade security with multi-factor authentication"
+    },
+    "digital_cards": {
+      "title": "Digital Cards",
+      "description": "Virtual and physical debit cards with spending controls"
+    },
+    "ai_powered": {
+      "title": "AI-Powered",
+      "description": "Smart fraud detection and personalized recommendations"
+    }
+  },
+  "stats": {
+    "assets_under_management": "Assets Under Management",
+    "active_users": "Active Users",
+    "uptime": "Uptime",
+    "support": "Support",
+    "api_calls": "API Calls",
+    "total_revenue": "Total Revenue",
+    "conversion_rate": "Conversion Rate"
+  },
+  "cta": {
+    "title": "Ready to Transform Your Banking?",
+    "description": "Join thousands of users who have already made the switch to next-generation banking",
+    "create_free_account": "Create Free Account"
+  },
+  "footer": {
+    "copyright": "© {year} FinTech Bank. All rights reserved.",
+    "made_with": "Made with ❤️ for the future of finance"
+  }
+}

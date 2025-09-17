@@ -1,0 +1,942 @@
+/**
+ * OpenAPI 3.0 Specification for FinTech Banking API
+ * 
+ * @author Adam J Smith <boom.ski@hotmail.com>
+ * @copyright 2024 NOIR9 FOUNDATION INC. All rights reserved.
+ * @license Commercial License - Proprietary Software
+ * @version 1.0.0
+ * @created 2025-07-20
+ */
+
+openapi: 3.0.3
+info:
+  title: FinTech Banking API
+  description: |
+    Comprehensive fintech banking platform with Web3 integration.
+    
+    **Developed by Adam J Smith / NØIR9 FOUNDATION INC**
+    
+    This API provides traditional banking services integrated with Web3 capabilities,
+    enabling developers to build modern financial applications with features like
+    multi-currency accounts, cryptocurrency wallets, payment processing, and DeFi integrations.
+    
+    ## Authentication
+    
+    The API supports multiple authentication methods:
+    - **JWT Token Authentication**: For traditional user sessions
+    - **Web3 Wallet Authentication**: For blockchain-based authentication
+    - **API Key Authentication**: For server-to-server communication
+    
+    ## Rate Limiting
+    
+    - Free Tier: 1,000 requests/hour
+    - Pro Tier: 10,000 requests/hour
+    - Enterprise: Custom limits
+    
+    ## Error Handling
+    
+    All errors follow a standardized format with descriptive codes and remediation guidance.
+    
+  version: 1.0.0
+  contact:
+    name: Adam J Smith
+    email: boom.ski@hotmail.com
+    url: https://noir9.foundation
+  license:
+    name: Commercial License - Proprietary Software
+    url: https://noir9.foundation/license
+  termsOfService: https://api.fintechbank.com/terms
+
+servers:
+  - url: https://api.fintechbank.com/v1
+    description: Production server
+  - url: https://staging-api.fintechbank.com/v1
+    description: Staging server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - WalletAuth: []
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+    WalletAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Wallet signature authentication (format: "Wallet <address>:<signature>")
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for server-to-server authentication
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+            - timestamp
+            - request_id
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              description: Human-readable error message
+              example: The request contains invalid parameters
+            details:
+              type: object
+              description: Additional error details
+              example:
+                field: email
+                issue: Invalid email format
+            timestamp:
+              type: string
+              format: date-time
+              description: When the error occurred
+              example: "2024-01-20T14:30:25Z"
+            request_id:
+              type: string
+              description: Unique request identifier for debugging
+              example: req_1234567890
+            remediation:
+              type: string
+              description: Suggested action to resolve the error
+              example: Please provide a valid email address in the format user@domain.com
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - username
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique user identifier
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: user@example.com
+        username:
+          type: string
+          description: Unique username
+          example: johndoe
+        first_name:
+          type: string
+          description: User's first name
+          example: John
+        last_name:
+          type: string
+          description: User's last name
+          example: Doe
+        phone:
+          type: string
+          description: User's phone number
+          example: "+1234567890"
+        wallet_address:
+          type: string
+          pattern: "^0x[a-fA-F0-9]{40}$"
+          description: Connected Web3 wallet address
+          example: "0x742d35Cc6634C0532925a3b8D34B60142C7f5e60"
+        is_wallet_verified:
+          type: boolean
+          description: Whether the wallet signature has been verified
+          example: true
+        kyc_status:
+          type: string
+          enum: [pending, verified, rejected, expired]
+          description: KYC verification status
+          example: verified
+        kyc_verified_at:
+          type: string
+          format: date-time
+          description: When KYC was verified
+          example: "2024-01-15T10:20:30Z"
+        is_premium:
+          type: boolean
+          description: Whether user has premium features
+          example: false
+        two_factor_enabled:
+          type: boolean
+          description: Whether 2FA is enabled
+          example: true
+        total_accounts:
+          type: integer
+          description: Number of accounts owned by user
+          example: 3
+        total_balance_usd:
+          type: string
+          description: Total balance across all accounts in USD
+          example: "15750.25"
+        created_at:
+          type: string
+          format: date-time
+          description: When the user was created
+          example: "2024-01-10T09:15:00Z"
+        last_login:
+          type: string
+          format: date-time
+          description: Last login timestamp
+          example: "2024-01-20T14:30:25Z"
+
+    Account:
+      type: object
+      required:
+        - id
+        - account_number
+        - account_type
+        - currency
+        - available_balance
+        - is_active
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique account identifier
+          example: "acc_1234567890"
+        account_number:
+          type: string
+          description: Human-readable account number
+          example: "1011234567890"
+        account_type:
+          type: string
+          enum: [checking, savings, investment, crypto, business]
+          description: Type of account
+          example: checking
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, ETH, BTC, USDC, USDT]
+          description: Account currency
+          example: USD
+        available_balance:
+          type: string
+          description: Available balance (string to preserve precision)
+          example: "5250.75"
+        ledger_balance:
+          type: string
+          description: Ledger balance
+          example: "5250.75"
+        pending_balance:
+          type: string
+          description: Pending balance
+          example: "0.00"
+        is_active:
+          type: boolean
+          description: Whether account is active
+          example: true
+        is_frozen:
+          type: boolean
+          description: Whether account is frozen
+          example: false
+        freeze_reason:
+          type: string
+          description: Reason for account freeze
+          example: "Suspicious activity detected"
+        interest_rate:
+          type: string
+          description: Annual interest rate
+          example: "0.0150"
+        monthly_fee:
+          type: string
+          description: Monthly maintenance fee
+          example: "5.00"
+        overdraft_limit:
+          type: string
+          description: Overdraft limit
+          example: "500.00"
+        contract_address:
+          type: string
+          pattern: "^0x[a-fA-F0-9]{40}$"
+          description: Smart contract address (for crypto accounts)
+          example: "0x..."
+        chain_id:
+          type: integer
+          description: Blockchain network ID
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          description: When the account was created
+          example: "2024-01-10T09:15:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: When the account was last updated
+          example: "2024-01-20T14:30:25Z"
+        last_transaction_at:
+          type: string
+          format: date-time
+          description: Last transaction timestamp
+          example: "2024-01-20T12:45:30Z"
+
+    Transaction:
+      type: object
+      required:
+        - id
+        - transaction_type
+        - amount
+        - currency
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique transaction identifier
+          example: "txn_1234567890"
+        from_account:
+          type: string
+          format: uuid
+          description: Source account ID
+          example: "acc_1234567890"
+        to_account:
+          type: string
+          format: uuid
+          description: Destination account ID
+          example: "acc_0987654321"
+        transaction_type:
+          type: string
+          enum: [deposit, withdrawal, transfer, payment, exchange, fee, interest]
+          description: Type of transaction
+          example: transfer
+        amount:
+          type: string
+          description: Transaction amount
+          example: "100.00"
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, ETH, BTC, USDC, USDT]
+          description: Transaction currency
+          example: USD
+        fee_amount:
+          type: string
+          description: Transaction fee
+          example: "2.50"
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, cancelled]
+          description: Transaction status
+          example: completed
+        reference_number:
+          type: string
+          description: Unique reference number
+          example: "TXN20240120001"
+        description:
+          type: string
+          description: Transaction description
+          example: "Transfer to savings account"
+        blockchain_hash:
+          type: string
+          description: Blockchain transaction hash
+          example: "0x..."
+        created_at:
+          type: string
+          format: date-time
+          description: When the transaction was created
+          example: "2024-01-20T14:30:25Z"
+        processed_at:
+          type: string
+          format: date-time
+          description: When the transaction was processed
+          example: "2024-01-20T14:31:00Z"
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: The request contains invalid parameters
+              details:
+                field: email
+                issue: Invalid email format
+              timestamp: "2024-01-20T14:30:25Z"
+              request_id: req_1234567890
+              remediation: Please provide a valid email address in the format user@domain.com
+
+    Unauthorized:
+      description: Unauthorized - Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: INVALID_CREDENTIALS
+              message: Authentication credentials are invalid or missing
+              timestamp: "2024-01-20T14:30:25Z"
+              request_id: req_1234567890
+              remediation: Please provide a valid JWT token in the Authorization header
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: INSUFFICIENT_PERMISSIONS
+              message: You do not have permission to access this resource
+              timestamp: "2024-01-20T14:30:25Z"
+              request_id: req_1234567890
+              remediation: Contact your administrator to request access to this resource
+
+    NotFound:
+      description: Not Found - Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: RESOURCE_NOT_FOUND
+              message: The requested resource was not found
+              timestamp: "2024-01-20T14:30:25Z"
+              request_id: req_1234567890
+              remediation: Please check the resource ID and try again
+
+    RateLimitExceeded:
+      description: Too Many Requests - Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per hour
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests in current window
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Unix timestamp when rate limit resets
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: RATE_LIMIT_EXCEEDED
+              message: API rate limit exceeded
+              timestamp: "2024-01-20T14:30:25Z"
+              request_id: req_1234567890
+              remediation: Please wait before making additional requests or upgrade your plan
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: INTERNAL_SERVER_ERROR
+              message: An unexpected server error occurred
+              timestamp: "2024-01-20T14:30:25Z"
+              request_id: req_1234567890
+              remediation: Please try again later or contact support if the problem persists
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: |
+        Create a new user account with optional Web3 wallet connection.
+        
+        **Security Requirements**: None (public endpoint)
+        
+        **Rate Limiting**: 10 requests per minute per IP
+        
+        **Validation Rules**:
+        - Email must be valid and unique
+        - Password must be at least 8 characters
+        - Username must be unique and alphanumeric
+        - Wallet address must be valid Ethereum address (if provided)
+      operationId: registerUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - username
+                - password
+                - password_confirm
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+                  example: user@example.com
+                username:
+                  type: string
+                  pattern: "^[a-zA-Z0-9_]{3,30}$"
+                  description: Unique username (3-30 characters, alphanumeric and underscore only)
+                  example: johndoe
+                password:
+                  type: string
+                  minLength: 8
+                  description: Password (minimum 8 characters)
+                  example: SecurePassword123!
+                password_confirm:
+                  type: string
+                  description: Password confirmation (must match password)
+                  example: SecurePassword123!
+                first_name:
+                  type: string
+                  maxLength: 50
+                  description: User's first name
+                  example: John
+                last_name:
+                  type: string
+                  maxLength: 50
+                  description: User's last name
+                  example: Doe
+                phone:
+                  type: string
+                  pattern: "^\\+?[1-9]\\d{1,14}$"
+                  description: Phone number in E.164 format
+                  example: "+1234567890"
+                wallet_address:
+                  type: string
+                  pattern: "^0x[a-fA-F0-9]{40}$"
+                  description: Ethereum wallet address
+                  example: "0x742d35Cc6634C0532925a3b8D34B60142C7f5e60"
+                wallet_signature:
+                  type: string
+                  description: Wallet signature for verification
+                  example: "0x..."
+                terms_accepted:
+                  type: boolean
+                  description: Whether user accepts terms and conditions
+                  example: true
+            examples:
+              basic_registration:
+                summary: Basic registration
+                value:
+                  email: user@example.com
+                  username: johndoe
+                  password: SecurePassword123!
+                  password_confirm: SecurePassword123!
+                  first_name: John
+                  last_name: Doe
+                  terms_accepted: true
+              wallet_registration:
+                summary: Registration with wallet
+                value:
+                  email: user@example.com
+                  username: johndoe
+                  password: SecurePassword123!
+                  password_confirm: SecurePassword123!
+                  wallet_address: "0x742d35Cc6634C0532925a3b8D34B60142C7f5e60"
+                  wallet_signature: "0x..."
+                  terms_accepted: true
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      token:
+                        type: string
+                        description: JWT access token
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      refresh_token:
+                        type: string
+                        description: JWT refresh token
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      expires_in:
+                        type: integer
+                        description: Token expiration time in seconds
+                        example: 3600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Conflict - User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: USER_ALREADY_EXISTS
+                  message: A user with this email already exists
+                  timestamp: "2024-01-20T14:30:25Z"
+                  request_id: req_1234567890
+                  remediation: Please use a different email address or try logging in
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user
+      description: |
+        Authenticate user with email/password or Web3 wallet signature.
+        
+        **Security Requirements**: None (public endpoint)
+        
+        **Rate Limiting**: 5 requests per minute per IP
+        
+        **Authentication Methods**:
+        1. **Traditional**: Email and password
+        2. **Web3 Wallet**: Wallet address, signature, and message
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  title: Traditional Login
+                  required:
+                    - email
+                    - password
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      description: User's email address
+                      example: user@example.com
+                    password:
+                      type: string
+                      description: User's password
+                      example: SecurePassword123!
+                - type: object
+                  title: Wallet Login
+                  required:
+                    - wallet_address
+                    - signature
+                    - message
+                  properties:
+                    wallet_address:
+                      type: string
+                      pattern: "^0x[a-fA-F0-9]{40}$"
+                      description: Ethereum wallet address
+                      example: "0x742d35Cc6634C0532925a3b8D34B60142C7f5e60"
+                    signature:
+                      type: string
+                      description: Signed message from wallet
+                      example: "0x..."
+                    message:
+                      type: string
+                      description: Original message that was signed
+                      example: "Login to FinTech Bank at 1640995200"
+            examples:
+              traditional_login:
+                summary: Traditional email/password login
+                value:
+                  email: user@example.com
+                  password: SecurePassword123!
+              wallet_login:
+                summary: Web3 wallet login
+                value:
+                  wallet_address: "0x742d35Cc6634C0532925a3b8D34B60142C7f5e60"
+                  signature: "0x..."
+                  message: "Login to FinTech Bank at 1640995200"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      token:
+                        type: string
+                        description: JWT access token
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      refresh_token:
+                        type: string
+                        description: JWT refresh token
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      expires_in:
+                        type: integer
+                        description: Token expiration time in seconds
+                        example: 3600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Account suspended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: ACCOUNT_SUSPENDED
+                  message: Your account has been suspended
+                  timestamp: "2024-01-20T14:30:25Z"
+                  request_id: req_1234567890
+                  remediation: Please contact support to resolve this issue
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /accounts:
+    get:
+      tags:
+        - Account Management
+      summary: List user accounts
+      description: |
+        Retrieve all accounts belonging to the authenticated user.
+        
+        **Security Requirements**: JWT token required
+        
+        **Permissions**: User can only access their own accounts
+        
+        **Filtering**: Supports filtering by account type, currency, and status
+      operationId: listAccounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: account_type
+          in: query
+          description: Filter by account type
+          required: false
+          schema:
+            type: string
+            enum: [checking, savings, investment, crypto, business]
+          example: checking
+        - name: currency
+          in: query
+          description: Filter by currency
+          required: false
+          schema:
+            type: string
+            enum: [USD, EUR, GBP, ETH, BTC, USDC, USDT]
+          example: USD
+        - name: is_active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+          example: true
+        - name: limit
+          in: query
+          description: Number of results per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          example: 20
+        - name: cursor
+          in: query
+          description: Pagination cursor
+          required: false
+          schema:
+            type: string
+          example: eyJpZCI6MTIzNDU2Nzg5MH0
+      responses:
+        '200':
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Account'
+                  pagination:
+                    type: object
+                    properties:
+                      has_more:
+                        type: boolean
+                        example: false
+                      next_cursor:
+                        type: string
+                        nullable: true
+                        example: null
+                      prev_cursor:
+                        type: string
+                        nullable: true
+                        example: null
+                      total_count:
+                        type: integer
+                        example: 2
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Account Management
+      summary: Create new account
+      description: |
+        Create a new account for the authenticated user.
+        
+        **Security Requirements**: JWT token required
+        
+        **Business Rules**:
+        - Maximum 10 accounts per user
+        - One account per type/currency combination
+        - KYC verification required for certain account types
+      operationId: createAccount
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - account_type
+                - currency
+              properties:
+                account_type:
+                  type: string
+                  enum: [checking, savings, investment, crypto, business]
+                  description: Type of account to create
+                  example: checking
+                currency:
+                  type: string
+                  enum: [USD, EUR, GBP, ETH, BTC, USDC, USDT]
+                  description: Account currency
+                  example: USD
+                initial_deposit:
+                  type: string
+                  description: Initial deposit amount (optional)
+                  example: "1000.00"
+            examples:
+              checking_account:
+                summary: Create checking account
+                value:
+                  account_type: checking
+                  currency: USD
+                  initial_deposit: "1000.00"
+              crypto_account:
+                summary: Create crypto account
+                value:
+                  account_type: crypto
+                  currency: ETH
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Account'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Account already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: ACCOUNT_EXISTS
+                  message: You already have a checking account in USD
+                  timestamp: "2024-01-20T14:30:25Z"
+                  request_id: req_1234567890
+                  remediation: Please choose a different account type or currency
+        '422':
+          description: Business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: ACCOUNT_LIMIT_EXCEEDED
+                  message: Maximum number of accounts reached (10)
+                  timestamp: "2024-01-20T14:30:25Z"
+                  request_id: req_1234567890
+                  remediation: Please close an existing account or contact support to increase your limit
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Account Management
+    description: Bank account creation and management
+  - name: Transactions
+    description: Transaction processing and history
+  - name: Payments
+    description: Payment processing and methods
+  - name: Web3 Integration
+    description: Blockchain and cryptocurrency features
+  - name: Compliance
+    description: KYC/AML and regulatory compliance
