@@ -23,6 +23,8 @@ import { BillTracking } from './components/BillTracking';
 import { P2PTransfers } from './components/P2PTransfers';
 import { BiometricAuth } from './components/BiometricAuth';
 import { FraudAlerts } from './components/FraudAlerts';
+import { VirtualCards } from './components/VirtualCards';
+import { AIFinancialAdvisor } from './components/AIFinancialAdvisor';
 import { Analytics } from './components/Analytics';
 import { Payments } from './components/Payments';
 import { Users } from './components/Users';
@@ -65,6 +67,8 @@ function AppContent() {
       case 'bills': return <BillTracking />;
       case 'biometric': return <BiometricAuth />;
       case 'fraud': return <FraudAlerts />;
+      case 'virtual-cards': return <VirtualCards />;
+      case 'ai-advisor': return <AIFinancialAdvisor />;
       default: return <Dashboard />;
     }
   };
@@ -108,6 +112,8 @@ function AppContent() {
       wallet: 'P2P Transfers - Send Money Instantly',
       biometric: 'Biometric Authentication - Passwordless Security',
       fraud: 'Fraud Protection - AI-Powered Security',
+      'virtual-cards': 'Virtual Card Numbers - Secure Online Shopping',
+      'ai-advisor': 'AI Financial Advisor - Intelligent Financial Guidance',
       analytics: 'Financial Analytics - Insights & Reports',
       payments: 'Payment Processing - Send & Receive Money',
       security: 'Security Center - Account Protection',
@@ -126,6 +132,8 @@ function AppContent() {
       wallet: 'Send money instantly to friends and family with P2P transfers',
       biometric: 'Secure passwordless authentication using Face ID and fingerprint',
       fraud: 'Advanced fraud detection with real-time security alerts',
+      'virtual-cards': 'Generate secure virtual card numbers for safe online shopping with spending controls',
+      'ai-advisor': 'Get personalized financial advice and intelligent recommendations from your AI advisor',
       analytics: 'Gain insights into your financial data with advanced analytics and reporting',
       payments: 'Process payments, transfers, and manage your payment methods securely',
       security: 'Manage account security, enable two-factor authentication, and monitor threats',
@@ -144,6 +152,8 @@ function AppContent() {
       wallet: ['P2P', 'transfers', 'send money', 'instant payments', 'friends'],
       biometric: ['biometric', 'face ID', 'fingerprint', 'passwordless', 'security'],
       fraud: ['fraud detection', 'security alerts', 'protection', 'AI monitoring'],
+      'virtual-cards': ['virtual cards', 'online security', 'temporary cards', 'spending limits', 'privacy'],
+      'ai-advisor': ['AI advisor', 'financial guidance', 'personalized advice', 'smart recommendations'],
       analytics: ['analytics', 'reports', 'insights', 'financial data', 'charts'],
       payments: ['payments', 'transfers', 'send money', 'payment processing'],
       security: ['security', 'protection', 'authentication', '2fa', 'privacy'],

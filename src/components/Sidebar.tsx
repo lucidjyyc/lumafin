@@ -16,7 +16,9 @@ import {
   BarChart3, 
   Code, 
   Book,
-  Zap
+  Zap,
+  Bot,
+  Lock
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -34,6 +36,8 @@ const navigationItems = [
   { id: 'bills', label: 'Bills', icon: Book },
   { id: 'biometric', label: 'Biometric', icon: Shield },
   { id: 'fraud', label: 'Fraud Alerts', icon: Book },
+  { id: 'virtual-cards', label: 'Virtual Cards', icon: Lock },
+  { id: 'ai-advisor', label: 'AI Advisor', icon: Bot },
   { id: 'analytics', label: 'Analytics', icon: Users },
   { id: 'security', label: 'Security', icon: Book },
   { id: 'settings', label: 'Settings', icon: Settings },
