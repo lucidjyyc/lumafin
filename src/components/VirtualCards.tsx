@@ -7,6 +7,8 @@
  * @created 2024-01-20
  */
 import React, { useState } from 'react';
+import { useCards, useCreateVirtualCard } from '../hooks/useApi';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { 
   CreditCard, 
   Plus, 
@@ -41,97 +43,104 @@ interface VirtualCard {
 }
 
 export const VirtualCards: React.FC = () => {
+  const { data: cards, loading, error, refetch } = useCards();
+  const { createCard, loading: creating } = useCreateVirtualCard();
   const [showCardNumbers, setShowCardNumbers] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [virtualCards, setVirtualCards] = useState<VirtualCard[]>([
-    {
-      id: '1',
-      nickname: 'Amazon Shopping',
-      cardNumber: '4532 1234 5678 9012',
-      expiryDate: '12/25',
-      cvv: '123',
-      type: 'merchant-locked',
-      spendingLimit: 500.00,
-      spentAmount: 234.56,
-      merchantName: 'Amazon',
-      isActive: true,
-      createdAt: '2024-01-15',
-      lastUsed: '2 days ago',
-      transactionCount: 8
-    },
-    {
-      id: '2',
-      nickname: 'Netflix Subscription',
-      cardNumber: '4532 9876 5432 1098',
-      expiryDate: '06/25',
-      cvv: '456',
-      type: 'subscription',
-      spendingLimit: 50.00,
-      spentAmount: 15.99,
-      merchantName: 'Netflix',
-      isActive: true,
-      createdAt: '2024-01-10',
-      lastUsed: '1 week ago',
-      transactionCount: 1
-    },
-    {
-      id: '3',
-      nickname: 'One-Time Purchase',
-      cardNumber: '4532 5555 4444 3333',
-      expiryDate: '03/25',
-      cvv: '789',
-      type: 'single-use',
-      spendingLimit: 100.00,
-      spentAmount: 89.99,
-      isActive: false,
-      createdAt: '2024-01-18',
-      lastUsed: '5 hours ago',
-      transactionCount: 1
+  const [newCardData, setNewCardData] = useState({
+    nickname: '',
+    card_type: 'virtual',
+    spending_limit: 1000,
+    merchant_name: '',
+    expires_at: ''
+  });
+
+  // Real-time card updates
+  useWebSocket({
+    onCardUpdate: (cardUpdate) => {
+      refetch(); // Refresh cards when updates occur
     }
-  ]);
+  });
 
-  const handleCreateCard = () => {
-    const newCard: VirtualCard = {
-      id: Date.now().toString(),
-      nickname: 'New Virtual Card',
-      cardNumber: '4532 ' + Math.random().toString().slice(2, 6) + ' ' + 
-                  Math.random().toString().slice(2, 6) + ' ' + 
-                  Math.random().toString().slice(2, 6),
-      expiryDate: '12/25',
-      cvv: Math.floor(Math.random() * 900 + 100).toString(),
-      type: 'general',
-      spendingLimit: 1000.00,
-      spentAmount: 0,
-      isActive: true,
-      createdAt: new Date().toISOString().split('T')[0],
-      transactionCount: 0
-    };
-    
-    setVirtualCards(prev => [newCard, ...prev]);
-    setShowCreateModal(false);
+  const virtualCards = cards?.filter(card => 
+    card.card_type.startsWith('virtual')
+  ) || [];
+
+  const handleCreateCard = async () => {
+    try {
+      await createCard(newCardData);
+      setShowCreateModal(false);
+      setNewCardData({
+        nickname: '',
+        card_type: 'virtual',
+        spending_limit: 1000,
+        merchant_name: '',
+        expires_at: ''
+      });
+      refetch(); // Refresh the cards list
+    } catch (error) {
+      console.error('Failed to create virtual card:', error);
+    }
   };
 
-  const handleDeleteCard = (cardId: string) => {
-    setVirtualCards(prev => prev.filter(card => card.id !== cardId));
+  const handleDeleteCard = async (cardId: string) => {
+    try {
+      await apiClient.toggleCardStatus(cardId, 'cancelled');
+      refetch();
+    } catch (error) {
+      console.error('Failed to delete card:', error);
+    }
   };
 
-  const handleToggleCard = (cardId: string) => {
-    setVirtualCards(prev => prev.map(card => 
-      card.id === cardId ? { ...card, isActive: !card.isActive } : card
-    ));
+  const handleToggleCard = async (cardId: string, currentStatus: string) => {
+    try {
+      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+      await apiClient.toggleCardStatus(cardId, newStatus);
+      refetch();
+    } catch (error) {
+      console.error('Failed to toggle card:', error);
+    }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // Could add toast notification here
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // Could add toast notification here
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500" />
+        <span className="ml-3 text-white">Loading virtual cards...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 bg-red-500/20 border border-red-500/30 rounded-xl text-red-300">
+        <h3 className="font-semibold mb-2">Error Loading Cards</h3>
+        <p>{error}</p>
+        <button 
+          onClick={refetch}
+          className="mt-3 px-4 py-2 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   const getCardTypeColor = (type: string) => {
     switch (type) {
-      case 'single-use': return 'bg-red-500/20 text-red-300 border-red-500/30';
-      case 'merchant-locked': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-      case 'subscription': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-      case 'general': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+      case 'virtual_single_use': return 'bg-red-500/20 text-red-300 border-red-500/30';
+      case 'virtual_merchant_locked': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'virtual_subscription': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+      case 'virtual': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
       default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
     }
   };
@@ -173,7 +182,7 @@ export const VirtualCards: React.FC = () => {
             <h3 className="text-lg font-semibold text-white">Active Cards</h3>
           </div>
           <p className="text-2xl font-bold text-white mb-2">
-            {virtualCards.filter(card => card.isActive).length}
+            {virtualCards.filter(card => card.status === 'active').length}
           </p>
           <p className="text-cyan-400 text-sm">Virtual cards in use</p>
         </div>
@@ -184,7 +193,7 @@ export const VirtualCards: React.FC = () => {
             <h3 className="text-lg font-semibold text-white">Protected Spending</h3>
           </div>
           <p className="text-2xl font-bold text-white mb-2">
-            ${virtualCards.reduce((sum, card) => sum + card.spentAmount, 0).toFixed(2)}
+            ${virtualCards.reduce((sum, card) => sum + (card.spent_amount || 0), 0).toFixed(2)}
           </p>
           <p className="text-emerald-400 text-sm">Secured transactions</p>
         </div>
@@ -204,7 +213,7 @@ export const VirtualCards: React.FC = () => {
             <h3 className="text-lg font-semibold text-white">This Month</h3>
           </div>
           <p className="text-2xl font-bold text-white mb-2">
-            {virtualCards.reduce((sum, card) => sum + card.transactionCount, 0)}
+            {virtualCards.reduce((sum, card) => sum + (card.usage_count || 0), 0)}
           </p>
           <p className="text-orange-400 text-sm">Transactions</p>
         </div>
@@ -213,14 +222,15 @@ export const VirtualCards: React.FC = () => {
       {/* Virtual Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {virtualCards.map((card) => {
-          const usagePercentage = getUsagePercentage(card.spentAmount, card.spendingLimit);
+          const usagePercentage = card.spending_limit ? 
+            getUsagePercentage(card.spent_amount || 0, card.spending_limit) : 0;
           const isNearLimit = usagePercentage > 80;
           
           return (
             <div
               key={card.id}
               className={`bg-white/10 backdrop-blur-xl border rounded-xl p-6 transition-all duration-300 ${
-                card.isActive 
+                card.status === 'active' 
                   ? 'border-white/20 hover:border-cyan-500/30' 
                   : 'border-gray-600/20 opacity-60'
               }`}
@@ -229,23 +239,23 @@ export const VirtualCards: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <div className={`p-2 rounded-lg ${
-                    card.isActive ? 'bg-cyan-500/20' : 'bg-gray-500/20'
+                    card.status === 'active' ? 'bg-cyan-500/20' : 'bg-gray-500/20'
                   }`}>
                     <CreditCard className={`w-5 h-5 ${
-                      card.isActive ? 'text-cyan-400' : 'text-gray-500'
+                      card.status === 'active' ? 'text-cyan-400' : 'text-gray-500'
                     }`} />
                   </div>
                   <div>
                     <h3 className="text-white font-semibold">{card.nickname}</h3>
-                    <span className={`px-2 py-1 rounded text-xs font-medium border ${getCardTypeColor(card.type)}`}>
-                      {card.type.replace('-', ' ')}
+                    <span className={`px-2 py-1 rounded text-xs font-medium border ${getCardTypeColor(card.card_type)}`}>
+                      {card.card_type.replace('virtual_', '').replace('_', ' ')}
                     </span>
                   </div>
                 </div>
                 
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => handleToggleCard(card.id)}
+                    onClick={() => handleToggleCard(card.id, card.status)}
                     className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
                   >
                     <Settings className="w-4 h-4" />
@@ -264,20 +274,22 @@ export const VirtualCards: React.FC = () => {
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-gray-400 text-sm">Card Number</span>
                   <button
-                    onClick={() => copyToClipboard(card.cardNumber.replace(/\s/g, ''))}
+                    onClick={() => copyToClipboard(card.card_number?.replace(/\s/g, '') || '')}
                     className="p-1 text-gray-400 hover:text-white transition-colors"
                   >
                     <Copy className="w-3 h-3" />
                   </button>
                 </div>
                 <p className="text-white font-mono text-lg mb-3">
-                  {showCardNumbers ? card.cardNumber : '•••• •••• •••• ••••'}
+                  {showCardNumbers ? (card.card_number || card.masked_card_number) : '•••• •••• •••• ••••'}
                 </p>
                 
                 <div className="flex justify-between">
                   <div>
                     <p className="text-gray-400 text-xs">Expires</p>
-                    <p className="text-white font-mono">{showCardNumbers ? card.expiryDate : '••/••'}</p>
+                    <p className="text-white font-mono">
+                      {showCardNumbers ? `${card.expiry_month}/${card.expiry_year}` : '••/••'}
+                    </p>
                   </div>
                   <div>
                     <p className="text-gray-400 text-xs">CVV</p>
@@ -287,50 +299,54 @@ export const VirtualCards: React.FC = () => {
               </div>
 
               {/* Spending Progress */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300 text-sm">Spending</span>
-                  <span className="text-white font-medium">
-                    ${card.spentAmount.toFixed(2)} / ${card.spendingLimit.toFixed(2)}
-                  </span>
+              {card.spending_limit && (
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300 text-sm">Spending</span>
+                    <span className="text-white font-medium">
+                      ${(card.spent_amount || 0).toFixed(2)} / ${card.spending_limit.toFixed(2)}
+                    </span>
+                  </div>
+                  
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        isNearLimit 
+                          ? 'bg-gradient-to-r from-red-500 to-red-600' 
+                          : 'bg-gradient-to-r from-cyan-500 to-blue-600'
+                      }`}
+                      style={{ width: `${usagePercentage}%` }}
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-400">{card.usage_count || 0} transactions</span>
+                    <span className={`font-medium ${isNearLimit ? 'text-red-400' : 'text-cyan-400'}`}>
+                      {usagePercentage.toFixed(1)}% used
+                    </span>
+                  </div>
                 </div>
-                
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      isNearLimit 
-                        ? 'bg-gradient-to-r from-red-500 to-red-600' 
-                        : 'bg-gradient-to-r from-cyan-500 to-blue-600'
-                    }`}
-                    style={{ width: `${usagePercentage}%` }}
-                  />
-                </div>
-                
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-400">{card.transactionCount} transactions</span>
-                  <span className={`font-medium ${isNearLimit ? 'text-red-400' : 'text-cyan-400'}`}>
-                    {usagePercentage.toFixed(1)}% used
-                  </span>
-                </div>
-              </div>
+              )}
 
               {/* Card Status */}
               <div className="mt-4 pt-4 border-t border-white/10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    {card.isActive ? (
+                    {card.status === 'active' ? (
                       <CheckCircle className="w-4 h-4 text-emerald-400" />
                     ) : (
                       <AlertCircle className="w-4 h-4 text-gray-500" />
                     )}
                     <span className={`text-sm font-medium ${
-                      card.isActive ? 'text-emerald-400' : 'text-gray-500'
+                      card.status === 'active' ? 'text-emerald-400' : 'text-gray-500'
                     }`}>
-                      {card.isActive ? 'Active' : 'Inactive'}
+                      {card.status === 'active' ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  {card.lastUsed && (
-                    <span className="text-gray-400 text-xs">Used {card.lastUsed}</span>
+                  {card.last_used_at && (
+                    <span className="text-gray-400 text-xs">
+                      Used {new Date(card.last_used_at).toLocaleDateString()}
+                    </span>
                   )}
                 </div>
               </div>
@@ -439,17 +455,23 @@ export const VirtualCards: React.FC = () => {
                 <input
                   type="text"
                   placeholder="e.g., Amazon Shopping"
+                  value={newCardData.nickname}
+                  onChange={(e) => setNewCardData(prev => ({ ...prev, nickname: e.target.value }))}
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Card Type</label>
-                <select className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-400">
-                  <option value="general">General Use</option>
-                  <option value="single-use">Single Use</option>
-                  <option value="merchant-locked">Merchant Locked</option>
-                  <option value="subscription">Subscription</option>
+                <select 
+                  value={newCardData.card_type}
+                  onChange={(e) => setNewCardData(prev => ({ ...prev, card_type: e.target.value }))}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                >
+                  <option value="virtual">General Use</option>
+                  <option value="virtual_single_use">Single Use</option>
+                  <option value="virtual_merchant_locked">Merchant Locked</option>
+                  <option value="virtual_subscription">Subscription</option>
                 </select>
               </div>
               
@@ -458,23 +480,40 @@ export const VirtualCards: React.FC = () => {
                 <input
                   type="number"
                   placeholder="1000.00"
+                  value={newCardData.spending_limit}
+                  onChange={(e) => setNewCardData(prev => ({ ...prev, spending_limit: parseFloat(e.target.value) || 0 }))}
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                 />
               </div>
+
+              {newCardData.card_type === 'virtual_merchant_locked' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Merchant Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Amazon"
+                    value={newCardData.merchant_name}
+                    onChange={(e) => setNewCardData(prev => ({ ...prev, merchant_name: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  />
+                </div>
+              )}
             </div>
             
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="flex-1 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+                disabled={creating}
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateCard}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all"
+                disabled={creating || !newCardData.nickname}
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-600 hover:to-blue-700 disabled:opacity-50 transition-all"
               >
-                Create Card
+                {creating ? 'Creating...' : 'Create Card'}
               </button>
             </div>
           </div>

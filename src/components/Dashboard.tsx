@@ -7,6 +7,8 @@
  * @created 2024-01-20
  */
 import React, { useState } from 'react';
+import { useAccounts, useTransactionAnalytics } from '../hooks/useApi';
+import { useRealTimeTransactions, useRealTimeFraudAlerts } from '../hooks/useWebSocket';
 import { 
   TrendingUp, 
   DollarSign, 
@@ -28,13 +30,22 @@ import {
 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
+  const { data: accounts } = useAccounts();
+  const { data: analytics } = useTransactionAnalytics(30);
+  const { transactions: recentTransactions } = useRealTimeTransactions();
+  const { alerts: fraudAlerts, unreadCount } = useRealTimeFraudAlerts();
   const [timeframe, setTimeframe] = useState('30d');
+
+  // Calculate stats from real data
+  const totalBalance = accounts?.reduce((sum, acc) => 
+    sum + parseFloat(acc.available_balance || '0'), 0
+  ) || 0;
 
   const stats = [
     {
-      title: 'Total Revenue',
-      value: '$2,847,293',
-      change: '+15.3%',
+      title: 'Total Balance',
+      value: `$${totalBalance.toLocaleString()}`,
+      change: '+2.3%',
       trend: 'up',
       icon: DollarSign,
       bgColor: 'bg-emerald-500/10',
@@ -42,19 +53,19 @@ export const Dashboard: React.FC = () => {
       changeColor: 'text-emerald-400'
     },
     {
-      title: 'API Requests',
-      value: '45.2M',
-      change: '+23.1%',
+      title: 'Transactions',
+      value: analytics?.total_transactions?.toString() || '0',
+      change: '+12.1%',
       trend: 'up',
-      icon: Zap,
+      icon: Activity,
       bgColor: 'bg-blue-500/10',
       iconColor: 'text-blue-400',
       changeColor: 'text-blue-400'
     },
     {
-      title: 'Active Users',
-      value: '18,429',
-      change: '+8.7%',
+      title: 'Active Accounts',
+      value: accounts?.filter(acc => acc.is_active).length.toString() || '0',
+      change: '+1',
       trend: 'up',
       icon: Users,
       bgColor: 'bg-purple-500/10',
@@ -63,73 +74,31 @@ export const Dashboard: React.FC = () => {
     },
     {
       title: 'Success Rate',
-      value: '99.97%',
-      change: '-0.03%',
-      trend: 'down',
+      value: `${analytics?.success_rate || 99.9}%`,
+      change: '+0.1%',
+      trend: 'up',
       icon: TrendingUp,
       bgColor: 'bg-orange-500/10',
       iconColor: 'text-orange-400',
-      changeColor: 'text-red-400'
+      changeColor: 'text-emerald-400'
     }
   ];
 
-  const recentTransactions = [
-    { 
-      id: 'tx_001', 
-      type: 'Payment', 
-      amount: '$2,450.00', 
-      status: 'completed', 
-      time: '2 min ago', 
-      customer: 'Acme Corp',
-      icon: CheckCircle,
-      statusColor: 'text-emerald-400',
-      statusBg: 'bg-emerald-500/10'
-    },
-    { 
-      id: 'tx_002', 
-      type: 'Transfer', 
-      amount: '$890.50', 
-      status: 'pending', 
-      time: '5 min ago', 
-      customer: 'TechStart Inc',
-      icon: Clock,
-      statusColor: 'text-yellow-400',
-      statusBg: 'bg-yellow-500/10'
-    },
-    { 
-      id: 'tx_003', 
-      type: 'Withdrawal', 
-      amount: '$1,200.00', 
-      status: 'completed', 
-      time: '12 min ago', 
-      customer: 'Global Ltd',
-      icon: CheckCircle,
-      statusColor: 'text-emerald-400',
-      statusBg: 'bg-emerald-500/10'
-    },
-    { 
-      id: 'tx_004', 
-      type: 'Deposit', 
-      amount: '$5,000.00', 
-      status: 'completed', 
-      time: '18 min ago', 
-      customer: 'Enterprise Co',
-      icon: CheckCircle,
-      statusColor: 'text-emerald-400',
-      statusBg: 'bg-emerald-500/10'
-    },
-    { 
-      id: 'tx_005', 
-      type: 'Payment', 
-      amount: '$750.25', 
-      status: 'failed', 
-      time: '25 min ago', 
-      customer: 'StartupXYZ',
-      icon: AlertCircle,
-      statusColor: 'text-red-400',
-      statusBg: 'bg-red-500/10'
-    }
-  ];
+  // Format recent transactions for display
+  const formattedTransactions = recentTransactions.slice(0, 5).map(transaction => ({
+    id: transaction.id,
+    type: transaction.transaction_type,
+    amount: `$${parseFloat(transaction.amount).toFixed(2)}`,
+    status: transaction.status,
+    time: new Date(transaction.created_at).toLocaleString(),
+    customer: transaction.description || 'Transaction',
+    icon: transaction.status === 'completed' ? CheckCircle : 
+          transaction.status === 'pending' ? Clock : AlertCircle,
+    statusColor: transaction.status === 'completed' ? 'text-emerald-400' :
+                 transaction.status === 'pending' ? 'text-yellow-400' : 'text-red-400',
+    statusBg: transaction.status === 'completed' ? 'bg-emerald-500/10' :
+              transaction.status === 'pending' ? 'bg-yellow-500/10' : 'bg-red-500/10'
+  }));
 
   const quickActions = [
     { label: 'Send Payment', icon: Send, bgColor: 'bg-blue-500', hoverColor: 'hover:bg-blue-600' },
@@ -211,7 +180,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {recentTransactions.map((transaction) => {
+              {formattedTransactions.map((transaction) => {
                 const StatusIcon = transaction.icon;
                 return (
                   <div key={transaction.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">

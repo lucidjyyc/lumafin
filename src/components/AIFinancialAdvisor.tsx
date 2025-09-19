@@ -38,6 +38,8 @@ interface FinancialInsight {
 }
 
 export const AIFinancialAdvisor: React.FC = () => {
+  const { data: accounts } = useAccounts();
+  const { data: analytics } = useTransactionAnalytics();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
@@ -104,6 +106,14 @@ export const AIFinancialAdvisor: React.FC = () => {
   const generateAIResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
     
+    // Get real user data for personalized responses
+    const totalBalance = accounts?.reduce((sum, acc) => 
+      sum + parseFloat(acc.available_balance || '0'), 0
+    ) || 0;
+    
+    const accountCount = accounts?.length || 0;
+    const monthlyTransactions = analytics?.total_transactions || 0;
+    
     // Virtual card responses
     if (lowerMessage.includes('virtual card') || lowerMessage.includes('online security')) {
       return "Virtual cards are excellent for online security! Here's why I recommend them:\n\n• **Data Breach Protection**: If a merchant gets hacked, only your virtual card number is compromised, not your real card\n• **Spending Control**: Set custom limits to prevent overcharges\n• **Subscription Management**: Create cards that auto-expire to avoid unwanted renewals\n• **Privacy**: Keep your real card details private from merchants\n\nWould you like me to walk you through creating your first virtual card?";
@@ -111,7 +121,7 @@ export const AIFinancialAdvisor: React.FC = () => {
     
     // Budget responses
     if (lowerMessage.includes('budget') || lowerMessage.includes('spending')) {
-      return "I'd love to help you create a budget! Based on your transaction history, here's what I see:\n\n• **Monthly Income**: ~$4,200\n• **Fixed Expenses**: $2,100 (rent, utilities, insurance)\n• **Variable Spending**: $1,650 (food, entertainment, shopping)\n• **Savings Rate**: 10.7% (Good start!)\n\n**My Recommendation**: Try the 50/30/20 rule:\n• 50% needs ($2,100) ✅\n• 30% wants ($1,260) - you're slightly over\n• 20% savings ($840) - room to improve\n\nShall we set up spending alerts for your highest categories?";
+      return `I'd love to help you create a budget! Based on your account data, here's what I see:\n\n• **Total Balance**: $${totalBalance.toLocaleString()}\n• **Active Accounts**: ${accountCount}\n• **Monthly Transactions**: ${monthlyTransactions}\n• **Account Types**: ${accounts?.map(acc => acc.account_type).join(', ') || 'None'}\n\n**My Recommendation**: With your current balance, consider:\n• Emergency fund: 3-6 months expenses\n• High-yield savings for better returns\n• Virtual cards for secure online spending\n• Investment accounts for long-term growth\n\nWould you like me to help you optimize your account structure?`;
     }
     
     // Investment responses
@@ -121,7 +131,10 @@ export const AIFinancialAdvisor: React.FC = () => {
     
     // Savings responses
     if (lowerMessage.includes('save') || lowerMessage.includes('emergency fund')) {
-      return "Excellent focus on saving! Here's your current situation:\n\n**Emergency Fund Progress**: $6,700 / $10,000 (67% complete)\n**Monthly Savings**: ~$450 average\n**Projected Completion**: 8 months at current rate\n\n**Ways to Accelerate**:\n• Reduce dining out by $100/month → Complete 2 months sooner\n• Use virtual cards with spending limits to control impulse purchases\n• Automate savings increases after pay raises\n\n**High-Yield Options**:\n• Current savings account: 0.5% APY\n• Recommended: Switch to 4.5% APY account\n• Potential extra earnings: $200/year\n\nShould I help you set up automatic transfers to boost your savings rate?";
+      const savingsAccounts = accounts?.filter(acc => acc.account_type === 'savings') || [];
+      const savingsBalance = savingsAccounts.reduce((sum, acc) => sum + parseFloat(acc.available_balance || '0'), 0);
+      
+      return `Excellent focus on saving! Here's your current situation:\n\n**Savings Accounts**: ${savingsAccounts.length}\n**Total Savings**: $${savingsBalance.toLocaleString()}\n**Total Assets**: $${totalBalance.toLocaleString()}\n**Savings Rate**: ${((savingsBalance / totalBalance) * 100).toFixed(1)}%\n\n**Recommendations**:\n• Target emergency fund: $${(totalBalance * 0.25).toLocaleString()} (3 months expenses)\n• Use virtual cards with spending limits to control impulse purchases\n• Consider high-yield savings accounts for better returns\n• Automate transfers to build consistent saving habits\n\nWould you like me to help you set up automatic savings transfers?`;
     }
     
     // Default helpful response
@@ -401,16 +414,35 @@ export const AIFinancialAdvisor: React.FC = () => {
           <h3 className="text-xl font-semibold text-white">Financial Health Score</h3>
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-emerald-400 rounded-full" />
-            <span className="text-emerald-400 font-semibold">Good (7.8/10)</span>
+            <span className="text-emerald-400 font-semibold">
+              {totalBalance > 10000 ? 'Excellent' : totalBalance > 5000 ? 'Good' : 'Fair'} 
+              ({accountCount > 2 ? '8.5' : accountCount > 1 ? '7.2' : '6.1'}/10)
+            </span>
           </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[
-            { category: 'Budgeting', score: 8.2, color: 'emerald' },
-            { category: 'Savings Rate', score: 7.1, color: 'blue' },
-            { category: 'Debt Management', score: 9.0, color: 'purple' },
-            { category: 'Security Practices', score: 6.9, color: 'orange' }
+            { 
+              category: 'Account Diversity', 
+              score: Math.min(accountCount * 2.5, 10), 
+              color: 'emerald' 
+            },
+            { 
+              category: 'Balance Health', 
+              score: Math.min((totalBalance / 1000) * 0.5, 10), 
+              color: 'blue' 
+            },
+            { 
+              category: 'Transaction Activity', 
+              score: Math.min((monthlyTransactions / 10) * 2, 10), 
+              color: 'purple' 
+            },
+            { 
+              category: 'Security Score', 
+              score: accounts?.some(acc => acc.account_type === 'crypto') ? 8.5 : 7.2, 
+              color: 'orange' 
+            }
           ].map((metric, index) => (
             <div key={index} className="text-center">
               <div className="relative w-16 h-16 mx-auto mb-3">
