@@ -1,11 +1,3 @@
-/**
- * Budgeting & Alerts Component - Spending Caps & Notifications
- * 
- * @author Adam J Smith <boom.ski@hotmail.com>
- * @copyright 2024 NOIR9 FOUNDATION INC. All rights reserved.
- * @license Commercial License - Proprietary Software
- * @created 2024-01-20
- */
 import React, { useState } from 'react';
 import { 
   Target, 

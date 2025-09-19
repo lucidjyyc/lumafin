@@ -19,7 +19,8 @@ import {
   Wifi,
   Car,
   Phone,
-  Lightbulb
+  Lightbulb,
+  DollarSign
 } from 'lucide-react';
 
 interface Bill {

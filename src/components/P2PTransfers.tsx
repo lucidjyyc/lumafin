@@ -17,7 +17,8 @@ import {
   ArrowRight,
   Smartphone,
   Mail,
-  Hash
+  Hash,
+  AlertCircle
 } from 'lucide-react';
 
 interface Contact {
