@@ -110,3 +110,25 @@ export function useCreateTransaction() {
 
   return { createTransaction, loading, error };
 }
+
+export function useCreateAccount() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const createAccount = async (accountData: any) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiClient.createAccount(accountData);
+      return response.data;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create account';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { createAccount, loading, error };
+}
