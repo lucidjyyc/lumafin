@@ -16,7 +16,13 @@ import { useInternalLinking } from './hooks/useInternalLinking';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
-import { ApiManagement } from './components/ApiManagement';
+import { AccountAggregation } from './components/AccountAggregation';
+import { TransactionCategorization } from './components/TransactionCategorization';
+import { BudgetingAlerts } from './components/BudgetingAlerts';
+import { BillTracking } from './components/BillTracking';
+import { P2PTransfers } from './components/P2PTransfers';
+import { BiometricAuth } from './components/BiometricAuth';
+import { FraudAlerts } from './components/FraudAlerts';
 import { Analytics } from './components/Analytics';
 import { Payments } from './components/Payments';
 import { Users } from './components/Users';
@@ -48,13 +54,17 @@ function AppContent() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard': return <Dashboard />;
-      case 'accounts': return <div className="text-white">Accounts Management</div>;
-      case 'transactions': return <div className="text-white">Transaction History</div>;
+      case 'accounts': return <AccountAggregation />;
+      case 'transactions': return <TransactionCategorization />;
       case 'payments': return <Payments />;
-      case 'wallet': return <div className="text-white">Wallet Integration</div>;
+      case 'wallet': return <P2PTransfers />;
       case 'analytics': return <Analytics />;
       case 'security': return <Security />;
       case 'settings': return <Settings />;
+      case 'budgets': return <BudgetingAlerts />;
+      case 'bills': return <BillTracking />;
+      case 'biometric': return <BiometricAuth />;
+      case 'fraud': return <FraudAlerts />;
       default: return <Dashboard />;
     }
   };
@@ -91,12 +101,16 @@ function AppContent() {
   function getPageTitle(tab: string): string {
     const titles: Record<string, string> = {
       dashboard: 'Dashboard - Account Overview',
-      api: 'API Management - Developer Tools',
+      accounts: 'Account Aggregation - All Accounts in One Place',
+      transactions: 'Transaction Categorization - Smart Spending Insights',
+      budgets: 'Budget Management - Spending Caps & Alerts',
+      bills: 'Bill Tracking - Never Miss a Payment',
+      wallet: 'P2P Transfers - Send Money Instantly',
+      biometric: 'Biometric Authentication - Passwordless Security',
+      fraud: 'Fraud Protection - AI-Powered Security',
       analytics: 'Financial Analytics - Insights & Reports',
       payments: 'Payment Processing - Send & Receive Money',
-      users: 'User Management - Account Administration',
       security: 'Security Center - Account Protection',
-      developer: 'Developer Portal - API Documentation',
       settings: 'Account Settings - Preferences & Configuration'
     };
     return titles[tab] || 'FinTech Bank Platform';
@@ -105,12 +119,16 @@ function AppContent() {
   function getPageDescription(tab: string): string {
     const descriptions: Record<string, string> = {
       dashboard: 'Monitor your financial overview, account balances, and recent activity',
-      api: 'Manage API keys, monitor usage, and access developer tools',
+      accounts: 'View all your accounts in one clean interface with real-time balances',
+      transactions: 'AI-powered transaction categorization and spending analysis',
+      budgets: 'Set spending limits and receive intelligent budget alerts',
+      bills: 'Track upcoming bills and pay with one tap for convenience',
+      wallet: 'Send money instantly to friends and family with P2P transfers',
+      biometric: 'Secure passwordless authentication using Face ID and fingerprint',
+      fraud: 'Advanced fraud detection with real-time security alerts',
       analytics: 'Gain insights into your financial data with advanced analytics and reporting',
       payments: 'Process payments, transfers, and manage your payment methods securely',
-      users: 'Administer user accounts, roles, and permissions across your platform',
       security: 'Manage account security, enable two-factor authentication, and monitor threats',
-      developer: 'Access API documentation, code examples, and developer resources',
       settings: 'Customize your account preferences, notifications, and platform settings'
     };
     return descriptions[tab] || 'Advanced fintech banking platform with Web3 integration';
@@ -119,12 +137,16 @@ function AppContent() {
   function getPageKeywords(tab: string): string[] {
     const keywords: Record<string, string[]> = {
       dashboard: ['dashboard', 'overview', 'accounts', 'balance', 'financial summary'],
-      api: ['api', 'developer', 'integration', 'endpoints', 'documentation'],
+      accounts: ['accounts', 'aggregation', 'balance', 'banking', 'overview'],
+      transactions: ['transactions', 'categorization', 'spending', 'analysis', 'AI'],
+      budgets: ['budget', 'spending limits', 'alerts', 'financial planning'],
+      bills: ['bills', 'payments', 'due dates', 'autopay', 'reminders'],
+      wallet: ['P2P', 'transfers', 'send money', 'instant payments', 'friends'],
+      biometric: ['biometric', 'face ID', 'fingerprint', 'passwordless', 'security'],
+      fraud: ['fraud detection', 'security alerts', 'protection', 'AI monitoring'],
       analytics: ['analytics', 'reports', 'insights', 'financial data', 'charts'],
       payments: ['payments', 'transfers', 'send money', 'payment processing'],
-      users: ['users', 'management', 'administration', 'accounts', 'permissions'],
       security: ['security', 'protection', 'authentication', '2fa', 'privacy'],
-      developer: ['developer', 'api', 'documentation', 'integration', 'code'],
       settings: ['settings', 'preferences', 'configuration', 'customization']
     };
     return keywords[tab] || ['fintech', 'banking', 'platform'];

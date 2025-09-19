@@ -26,10 +26,14 @@ interface SidebarProps {
 
 const navigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'accounts', label: 'Accounts', icon: CreditCard },
-  { id: 'transactions', label: 'Transactions', icon: BarChart3 },
+  { id: 'accounts', label: 'All Accounts', icon: CreditCard },
+  { id: 'transactions', label: 'Categories', icon: BarChart3 },
   { id: 'payments', label: 'Payments', icon: Code },
-  { id: 'wallet', label: 'Wallet', icon: Shield },
+  { id: 'wallet', label: 'Send Money', icon: Shield },
+  { id: 'budgets', label: 'Budgets', icon: Users },
+  { id: 'bills', label: 'Bills', icon: Book },
+  { id: 'biometric', label: 'Biometric', icon: Shield },
+  { id: 'fraud', label: 'Fraud Alerts', icon: Book },
   { id: 'analytics', label: 'Analytics', icon: Users },
   { id: 'security', label: 'Security', icon: Book },
   { id: 'settings', label: 'Settings', icon: Settings },
