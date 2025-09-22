@@ -379,7 +379,37 @@ For commercial licensing and support:
 - Documentation: https://docs.fintechbank.io
 - API Status: https://status.fintechbank.io
 
-## 🗺️ Roadmap
+---------------------------------------------------
+
+Here are some API usage examples from the README:
+
+AuthenticationAuthentication
+
+Register
+`  POST /api/auth/register/
+  Request
+
+{
+  "email": "user@example.com",
+  "username": "username",
+  "password": "secure_password",
+  "password_confirm": "secure_password"
+}
+`
+
+Response
+
+{
+  "id": "user_12345",
+  "email": "user@example.com",
+  "username": "username",
+  "created_at": "2025-09-20T12:00:00Z",
+  "token": "jwt_token_here"
+}
+
+
+
+# 🗺️ Roadmap
 
 - [ ] Mobile application (React Native)
 - [ ] Advanced DeFi integrations
