@@ -2,7 +2,7 @@
 
 A production-ready fintech banking API system built with Django REST Framework, React, and Web3.js integration. This platform combines traditional banking features with cutting-edge blockchain technology for commercial deployment.
 
-**Created by:** Adam J Smith <boom.ski@hotmail.com>  
+**Created by:** Adam J Smith <contact@yycstack.dev>  
 **Copyright:** 2024 NOIR9 FOUNDATION INC. All rights reserved.  
 **License:** Commercial License - Proprietary Software
 
